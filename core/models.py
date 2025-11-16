@@ -48,7 +48,6 @@ class Worker(AbstractUser):
         verbose_name = "Worker"
         verbose_name_plural = "Workers"
         ordering = [
-            models.F("position__name").asc(nulls_first=True),
             "last_name",
             "first_name",
             "username"
@@ -106,12 +105,7 @@ class Task(models.Model):
     class Meta:
         verbose_name = "Task"
         verbose_name_plural = "Tasks"
-        ordering = [
-            "deadline",
-            "is_completed",
-            "task_type",
-            "name",
-        ]
+        ordering = ["-id"]
 
     def __str__(self):
         task_type_str = self.task_type.name if self.task_type else "N/A"
