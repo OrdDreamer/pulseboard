@@ -1,0 +1,74 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% block title %}
+  <title>Pulseboard - Best Task Manager</title>
+  {% endblock %}
+
+  {% block description %}
+  <meta
+    name="description"
+    content="Pulseboard is a task manager that helps you manage your tasks and projects."
+  >
+  {% endblock %}
+
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <link
+    rel="stylesheet"
+    href="{% static 'css/normalize.css' %}"
+  >
+  <link
+    rel="stylesheet"
+    href="{% static 'css/styles.css' %}"
+  >
+
+  <!-- Google Fonts -->
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+  <!-- TODO: Optimize weights -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- TODO: Add favicon -->
+  <link
+    rel="icon"
+    href="/favicon.ico"
+  >
+  <link
+    rel="apple-touch-icon"
+    href="/favicon.ico"
+  >
+</head>
+
+<body>
+  <div>
+    {% block sidebar %}
+    {% include "includes/sidebar.html" %}
+    {% endblock %}
+  </div>
+  <div>
+    {% block content %}{% endblock %}
+
+    {% block pagination %}
+    {% include "includes/pagination.html" %}
+    {% endblock %}
+  </div>
+</body>
+
+</html>
