@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Task List{% endblock %}
+
+{% block content %}
+<div>
+    <h1>Task List</h1>
+    <ul>
+        {% for task in tasks %}
+        <li>{{ task.name }} - {{ task.description }} - {{ task.deadline }} - {{ task.is_completed }} - {{ task.priority
+            }} - {{ task.task_type }} - {{ task.assignees.all }}</li>
+        {% empty %}
+        <li>No tasks found</li>
+        {% endfor %}
+    </ul>
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
