@@ -1,0 +1,54 @@
+{% extends "base_auth.html" %}
+{% load static %}
+
+{% block title %}
+<title>Login - Pulseboard</title>
+{% endblock %}
+
+{% block content %}
+<div class="auth-header">
+  <img
+    class="auth-logo"
+    src="{% static 'images/logo.svg' %}"
+    alt=""
+    aria-hidden="true"
+    width="64"
+    height="64"
+  >
+  <h1 class="auth-title">Welcome!</h1>
+  <p class="auth-subtitle">Enter your credentials to access your account</p>
+</div>
+
+<form
+  method="post"
+  action="{% url 'login' %}"
+  class="auth-form"
+  novalidate
+>
+  {% csrf_token %}
+  {{ form.as_p }}
+
+  {% if next %}
+  <input type="hidden" name="next" value="{{ next }}"/>
+  {% endif %}
+
+  <button
+    type="submit"
+    class="btn btn--primary"
+  >
+    Login
+  </button>
+</form>
+
+<footer class="auth-footer">
+  <p class="auth-footer-text">
+    Don't have an account?
+    <a
+      href="{% url 'register' %}"
+      class="auth-footer-link"
+    >
+      Register
+    </a>
+  </p>
+</footer>
+{% endblock %}

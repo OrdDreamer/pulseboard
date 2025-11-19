@@ -1,0 +1,33 @@
+{% extends "base_auth.html" %}
+{% load static %}
+
+{% block title %}
+<title>Registration Successful - Pulseboard</title>
+{% endblock %}
+
+{% block content %}
+<header class="auth-header">
+  <img
+    class="auth-logo"
+    src="{% static 'images/logo.svg' %}"
+    alt=""
+    aria-hidden="true"
+    width="64"
+    height="64"
+  >
+  <h1 class="auth-title">Welcome!</h1>
+  <p class="auth-subtitle">Your account has been successfully created. You can now log in and start managing your tasks!</p>
+</header>
+
+<footer class="auth-footer">
+  <p class="auth-footer-text">
+    Ready to get started?
+  <a
+    href="{% url 'login' %}"
+    class="auth-footer-link"
+  >
+    Log in
+  </a>
+  </p>
+</footer>
+{% endblock %}
