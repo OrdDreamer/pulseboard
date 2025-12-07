@@ -1,4 +1,11 @@
-<div>
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Pulseboard - Best Task Manager</title>
+{% endblock %}
+
+{% block content %}
+  <div>
     <h1>Pulseboard</h1>
     <p>Welcome to the Pulseboard</p>
     <p>Total tasks: {{ total_tasks }}</p>
@@ -9,4 +16,5 @@
     <p>Upcoming tasks: {{ upcoming_tasks.count }}</p>
     <p>Urgent tasks: {{ urgent_tasks.count }}</p>
     <p>Priority stats: {{ priority_stats }}</p>
-</div>
+  </div>
+{% endblock %}

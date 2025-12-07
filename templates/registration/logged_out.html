@@ -2,32 +2,33 @@
 {% load static %}
 
 {% block title %}
-<title>You are logged out - Pulseboard</title>
+You are logged out - Pulseboard
 {% endblock %}
 
 {% block content %}
-<header class="auth-header">
-  <img
-    class="auth-logo"
-    src="{% static 'images/logo.svg' %}"
-    alt=""
-    aria-hidden="true"
-    width="64"
-    height="64"
-  >
-  <h1 class="auth-title">Goodbye!</h1>
-  <p class="auth-subtitle">You have been successfully logged out. Thank you for visiting! We hope to see you again soon.</p>
-</header>
+<div class="card shadow">
+  <div class="card-body p-5">
+    <div class="text-center mb-4">
+      <img
+        src="{% static 'images/logo.svg' %}"
+        alt="Pulseboard Logo"
+        width="64"
+        height="64"
+        class="mb-3"
+        aria-hidden="true"
+      >
+      <h1 class="h3 mb-2">Goodbye!</h1>
+      <p class="text-muted">You have been successfully logged out. Thank you for visiting! We hope to see you again soon.</p>
+    </div>
 
-<footer class="auth-footer">
-  <p class="auth-footer-text">
-    Want to log in again?
-  <a
-    href="{% url 'login' %}"
-    class="auth-footer-link"
-  >
-    Log in
-  </a>
-  </p>
-</footer>
+    <div class="text-center mt-4">
+      <p class="mb-0">
+        Want to log in again?
+        <a href="{% url 'login' %}" class="text-decoration-none">
+          Log in
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
 {% endblock %}

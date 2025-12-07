@@ -1,14 +1,17 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.shortcuts import render
+from django.http import JsonResponse
 from django.utils import timezone
+from django.views.decorators.http import require_http_methods
 from django.views.generic import (
     ListView,
     CreateView,
     DetailView,
     UpdateView,
     DeleteView,
+    View,
+    TemplateView,
 )
 
 from core.models import Task
@@ -16,55 +19,59 @@ from core.models import Task
 User = get_user_model()
 
 
-@login_required
-def index(request):
-    user = request.user
-    today = timezone.now().date()
-    tasks = Task.objects.all()
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = "core/index.html"
 
-    total_tasks = tasks.count()
-    completed_tasks = tasks.filter(is_completed=True).count()
-    pending_tasks = tasks.filter(is_completed=False).count()
-    overdue_tasks = tasks.filter(
-        is_completed=False,
-        deadline__lt=today
-    ).count()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        today = timezone.now().date()
+        tasks = Task.objects.all()
 
-    my_tasks = tasks.filter(
-        assignees=user,
-        is_completed=False
-    ).select_related("task_type").prefetch_related("assignees")
+        total_tasks = tasks.count()
+        completed_tasks = tasks.filter(is_completed=True).count()
+        pending_tasks = tasks.filter(is_completed=False).count()
+        overdue_tasks = tasks.filter(
+            is_completed=False,
+            deadline__lt=today
+        ).count()
 
-    upcoming_deadline = today + timezone.timedelta(days=7)
-    upcoming_tasks = my_tasks.filter(
-        deadline__lt=upcoming_deadline,
-        deadline__gte=today
-    ).order_by("deadline")
+        my_tasks = tasks.filter(
+            assignees=user,
+            is_completed=False
+        ).select_related("task_type").prefetch_related("assignees")
 
-    urgent_tasks = my_tasks.filter(priority__in=["urgent", "high"])
+        upcoming_deadline = today + timezone.timedelta(days=7)
+        upcoming_tasks = my_tasks.filter(
+            deadline__lt=upcoming_deadline,
+            deadline__gte=today
+        ).order_by("deadline")
 
-    priority_stats = {
-        "urgent": tasks.filter(priority="urgent", is_completed=False).count(),
-        "high": tasks.filter(priority="high", is_completed=False).count(),
-        "medium": tasks.filter(priority="medium", is_completed=False).count(),
-        "low": tasks.filter(priority="low", is_completed=False).count(),
-    }
+        urgent_tasks = my_tasks.filter(priority__in=["urgent", "high"])
 
-    context = {
-        "total_tasks": total_tasks,
-        "completed_tasks": completed_tasks,
-        "pending_tasks": pending_tasks,
-        "overdue_tasks": overdue_tasks,
-        "my_tasks": my_tasks[:10],
-        "upcoming_tasks": upcoming_tasks[:5],
-        "urgent_tasks": urgent_tasks[:5],
-        "priority_stats": priority_stats,
-    }
+        priority_stats = {
+            "urgent": tasks.filter(priority="urgent", is_completed=False).count(),
+            "high": tasks.filter(priority="high", is_completed=False).count(),
+            "medium": tasks.filter(priority="medium", is_completed=False).count(),
+            "low": tasks.filter(priority="low", is_completed=False).count(),
+        }
 
-    return render(request, "core/index.html", context)
+        context.update({
+            "total_tasks": total_tasks,
+            "completed_tasks": completed_tasks,
+            "pending_tasks": pending_tasks,
+            "overdue_tasks": overdue_tasks,
+            "my_tasks": my_tasks[:10],
+            "upcoming_tasks": upcoming_tasks[:5],
+            "urgent_tasks": urgent_tasks[:5],
+            "priority_stats": priority_stats,
+            "dashboard_page": "active",
+        })
+
+        return context
 
 
-class TaskListView(ListView):
+class TaskListView(LoginRequiredMixin, ListView):
     model = Task
     template_name = "core/task_list.html"
     context_object_name = "tasks"
@@ -92,30 +99,56 @@ class TaskListView(ListView):
 
         return queryset
 
-
-class TaskCreateView(CreateView):
-    pass
-
-
-class TaskDetailView(DetailView):
-    pass
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["task_page"] = "active"
+        return context
 
 
-class TaskUpdateView(UpdateView):
-    pass
+class TaskCreateView(LoginRequiredMixin, CreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["task_page"] = "active"
+        return context
 
 
-class TaskDeleteView(DeleteView):
-    pass
+class TaskDetailView(LoginRequiredMixin, DetailView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["task_page"] = "active"
+        return context
 
 
-class WorkerListView(ListView):
-    pass
+class TaskUpdateView(LoginRequiredMixin, UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["task_page"] = "active"
+        return context
 
 
-class WorkerDetailView(DetailView):
-    pass
+class TaskDeleteView(LoginRequiredMixin, DeleteView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["task_page"] = "active"
+        return context
 
 
-class WorkerUpdateView(UpdateView):
-    pass
+class WorkerListView(LoginRequiredMixin, ListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["worker_page"] = "active"
+        return context
+
+
+class WorkerDetailView(LoginRequiredMixin, DetailView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["worker_page"] = "active"
+        return context
+
+
+class WorkerUpdateView(LoginRequiredMixin, UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["worker_page"] = "active"
+        return context
