@@ -6,7 +6,7 @@ from django.contrib.auth.password_validation import (
 )
 from django.utils.safestring import mark_safe
 
-from core.models import Task, TaskType
+from core.models import Task, TaskType, Position
 
 User = get_user_model()
 
@@ -127,3 +127,29 @@ class TaskForm(forms.ModelForm):
             "assignees": forms.CheckboxSelectMultiple(),
             "deadline": forms.DateInput(attrs={"type": "date"})
         }
+
+
+class WorkerSearchForm(forms.Form):
+    search = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Search by name, surname, or username...",
+        })
+    )
+
+
+class WorkerFilterForm(forms.Form):
+    position = forms.ChoiceField(
+        required=False,
+        widget=forms.Select(attrs={"class": "form-select"})
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        position_choices = [("all", "All")]
+        position_choices.extend([
+            (str(pos.id), pos.name)
+            for pos in Position.objects.all().order_by("name")
+        ])
+        self.fields["position"].choices = position_choices

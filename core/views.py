@@ -13,7 +13,13 @@ from django.views.generic import (
 )
 
 from core.models import Task, TaskType
-from core.forms import TaskForm, TaskSearchForm, TaskFilterForm
+from core.forms import (
+    TaskForm,
+    TaskSearchForm,
+    TaskFilterForm,
+    WorkerSearchForm,
+    WorkerFilterForm
+)
 
 User = get_user_model()
 
@@ -215,9 +221,48 @@ class TaskDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class WorkerListView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = "core/worker_list.html"
+    context_object_name = "workers"
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = User.objects.select_related("position")
+
+        search = self.request.GET.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(first_name__icontains=search)
+                | Q(last_name__icontains=search)
+                | Q(username__icontains=search)
+            )
+
+        position_id = self.request.GET.get("position")
+        if position_id and position_id != "all":
+            queryset = queryset.filter(position_id=position_id)
+
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["worker_page"] = "active"
+
+        search_form = WorkerSearchForm(self.request.GET)
+        filter_form = WorkerFilterForm(self.request.GET)
+
+        context["search_form"] = search_form
+        context["filter_form"] = filter_form
+
+        active_filters_count = 0
+        filter_data = filter_form.data if filter_form.is_bound else {}
+
+        if (filter_data.get("position")
+                and filter_data.get("position") != "all"):
+            active_filters_count += 1
+
+        context["active_filters_count"] = active_filters_count
+        context["has_active_filters"] = active_filters_count > 0
+
         return context
 
 
