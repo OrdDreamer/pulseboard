@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Worker Detail{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-md-row flex-column gap-3 mb-4">
+    <div class="d-flex align-items-center gap-3 me-auto">
+      <a href="javascript:history.back()" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+        <span class="visually-hidden">Back to List</span>
+      </a>
+      <h1 class="m-0">Worker Detail</h1>
+    </div>
+    {% if can_edit %}
+      <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'core:worker-update' worker.pk %}" class="btn btn-primary">
+          <i class="bi bi-pencil"></i> Edit
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <div>
+    <h2 class="mb-4">
+      {% if worker.first_name or worker.last_name %}
+        {{ worker.first_name }} {{ worker.last_name }}
+      {% else %}
+        {{ worker.username }}
+      {% endif %}
+    </h2>
+    <div class="d-flex flex-lg-row flex-column gap-3 mb-4 border rounded p-3">
+      <div class="flex-lg-fill">
+        <h5 class="text-muted mb-2">Basic Information</h5>
+        <table class="table table-borderless m-0">
+          <tr>
+            <th class="fw-normal">First Name:</th>
+            <td>
+              {% if worker.first_name %}
+                {{ worker.first_name }}
+              {% else %}
+                <span class="text-muted">Not specified</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th class="fw-normal">Last Name:</th>
+            <td>
+              {% if worker.last_name %}
+                {{ worker.last_name }}
+              {% else %}
+                <span class="text-muted">Not specified</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th class="fw-normal">Username:</th>
+            <td>{{ worker.username }}</td>
+          </tr>
+          <tr>
+            <th class="fw-normal">Email:</th>
+            <td>
+              {% if worker.email %}
+                <a href="mailto:{{ worker.email }}" class="text-decoration-none">
+                  {{ worker.email }}
+                </a>
+              {% else %}
+                <span class="text-muted">Not specified</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th class="fw-normal">Position:</th>
+            <td>
+              {% if worker.position %}
+                <span class="badge border border-secondary text-secondary">{{ worker.position.name }}</span>
+              {% else %}
+                <span class="text-muted">Not specified</span>
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="d-flex flex-lg-row flex-column gap-3 mb-4">
+      <div class="flex-lg-fill">
+        <div class="card border-secondary-subtle border p-3">
+          <h5 class="text-muted mb-3">Pending Tasks</h5>
+          {% if pending_tasks %}
+            <ul class="list-unstyled m-0">
+              {% for task in pending_tasks %}
+                <li class="py-2 border-bottom">
+                  <a href="{% url 'core:task-detail' task.pk %}" class="text-decoration-none">
+                    <i class="bi bi-circle text-secondary"></i> {{ task.name }}
+                  </a>
+                  {% if task.priority == "urgent" %}
+                    <span class="badge border border-danger bg-danger-subtle text-danger ms-2">
+                      <i class="bi bi-chevron-double-up fw-bold"></i> Urgent
+                    </span>
+                  {% elif task.priority == "high" %}
+                    <span class="badge border border-warning bg-warning-subtle text-warning ms-2">
+                      <i class="bi bi-chevron-up fw-bold"></i> High
+                    </span>
+                  {% elif task.priority == "medium" %}
+                    <span class="badge border border-info bg-info-subtle text-info ms-2">
+                      <i class="bi bi-dash-lg fw-bold"></i> Medium
+                    </span>
+                  {% elif task.priority == "low" %}
+                    <span class="badge border border-secondary bg-secondary-subtle text-secondary ms-2">
+                      <i class="bi bi-chevron-down fw-bold"></i> Low
+                    </span>
+                  {% endif %}
+                  {% if task.deadline < today %}
+                    <span class="badge border border-danger bg-danger-subtle text-danger ms-2">Overdue</span>
+                  {% elif task.deadline == today %}
+                    <span class="badge border border-warning bg-warning-subtle text-warning ms-2">Due Today</span>
+                  {% endif %}
+                  <br>
+                  <small class="text-muted">
+                    <i class="bi bi-calendar"></i> {{ task.deadline }}
+                    {% if task.task_type %}
+                      | <span class="badge border border-secondary text-secondary">{{ task.task_type.name }}</span>
+                    {% endif %}
+                  </small>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted m-0">No pending tasks</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="flex-lg-fill">
+        <div class="card border-secondary-subtle border p-3">
+          <h5 class="text-muted mb-3">Completed Tasks</h5>
+          {% if completed_tasks %}
+            <ul class="list-unstyled m-0">
+              {% for task in completed_tasks %}
+                <li class="py-2 border-bottom">
+                  <a href="{% url 'core:task-detail' task.pk %}" class="text-decoration-none">
+                    <i class="bi bi-check-circle text-success"></i> {{ task.name }}
+                  </a>
+                  <br>
+                  <small class="text-muted">
+                    <i class="bi bi-calendar"></i> {{ task.deadline }}
+                    {% if task.task_type %}
+                      | <span class="badge border border-secondary text-secondary">{{ task.task_type.name }}</span>
+                    {% endif %}
+                  </small>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted m-0">No completed tasks</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

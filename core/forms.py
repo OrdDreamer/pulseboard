@@ -153,3 +153,9 @@ class WorkerFilterForm(forms.Form):
             for pos in Position.objects.all().order_by("name")
         ])
         self.fields["position"].choices = position_choices
+
+
+class WorkerUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "username", "email", "position")

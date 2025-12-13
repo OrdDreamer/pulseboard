@@ -92,11 +92,13 @@
         {% for worker in workers %}
           <tr class="worker-row">
             <td>
-              {% if worker.first_name or worker.last_name %}
-                {{ worker.first_name }} {{ worker.last_name }}
-              {% else %}
-                {{ worker.username }}
-              {% endif %}
+              <a href="{% url 'core:worker-detail' worker.pk %}" class="text-decoration-none">
+                {% if worker.first_name or worker.last_name %}
+                  {{ worker.first_name }} {{ worker.last_name }}
+                {% else %}
+                  {{ worker.username }}
+                {% endif %}
+              </a>
             </td>
             <td class="d-none d-md-table-cell">
               {{ worker.username }}

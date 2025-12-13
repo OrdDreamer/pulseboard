@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.utils import timezone
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.http import HttpResponseForbidden
 from django.views.generic import (
     ListView,
     CreateView,
@@ -18,7 +19,8 @@ from core.forms import (
     TaskSearchForm,
     TaskFilterForm,
     WorkerSearchForm,
-    WorkerFilterForm
+    WorkerFilterForm,
+    WorkerUpdateForm,
 )
 
 User = get_user_model()
@@ -267,13 +269,37 @@ class WorkerListView(LoginRequiredMixin, ListView):
 
 
 class WorkerDetailView(LoginRequiredMixin, DetailView):
+    model = User
+    context_object_name = "worker"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        worker = self.get_object()
+
+        all_tasks = Task.objects.filter(assignees=worker).select_related(
+            "task_type"
+        )
+        context["completed_tasks"] = all_tasks.filter(is_completed=True)
+        context["pending_tasks"] = all_tasks.filter(is_completed=False)
+        context["can_edit"] = self.request.user == worker
+
         context["worker_page"] = "active"
+        context["today"] = timezone.now().date()
         return context
 
 
 class WorkerUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = WorkerUpdateForm
+
+    def get_success_url(self):
+        return reverse("core:worker-detail", kwargs={"pk": self.object.pk})
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.pk != self.get_object().pk:
+            return HttpResponseForbidden("You can only edit your own profile")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["worker_page"] = "active"
