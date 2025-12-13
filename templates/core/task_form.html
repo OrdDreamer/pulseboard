@@ -3,7 +3,13 @@
 {% block title %}Create Task{% endblock %}
 
 {% block content %}
-      <h1>Create Task</h1>
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{% url 'core:task-list' %}" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left"></i> 
+          <span class="visually-hidden">Back to List</span>
+        </a>
+        <h1 class="me-auto">Create Task</h1>
+      </div>
       <form method="post" action="{% url 'core:task-create' %}">
         {% csrf_token %}
         {{ form|crispy }}

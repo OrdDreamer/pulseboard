@@ -189,6 +189,7 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["task_page"] = "active"
+        context["today"] = timezone.now().date()
         return context
 
 
