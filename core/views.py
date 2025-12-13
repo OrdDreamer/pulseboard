@@ -14,7 +14,8 @@ from django.views.generic import (
     TemplateView,
 )
 
-from core.models import Task
+from core.models import Task, TaskType
+from core.forms import TaskSearchForm, TaskFilterForm
 
 User = get_user_model()
 
@@ -84,12 +85,7 @@ class TaskListView(LoginRequiredMixin, ListView):
             "assignees"
         )
 
-        status = self.request.GET.get("status")
-        if status == "completed":
-            queryset = queryset.filter(is_completed=True)
-        elif status == "pending":
-            queryset = queryset.filter(is_completed=False)
-
+        # Search filter
         search = self.request.GET.get("search")
         if search:
             queryset = queryset.filter(
@@ -97,11 +93,73 @@ class TaskListView(LoginRequiredMixin, ListView):
                 | Q(description__icontains=search)
             )
 
+        # Status filter
+        status = self.request.GET.get("status")
+        if status == "completed":
+            queryset = queryset.filter(is_completed=True)
+        elif status == "pending":
+            queryset = queryset.filter(is_completed=False)
+
+        # Priority filter
+        priority = self.request.GET.get("priority")
+        if priority and priority != "all":
+            queryset = queryset.filter(priority=priority)
+
+        # Task type filter
+        task_type_id = self.request.GET.get("task_type")
+        if task_type_id and task_type_id != "all":
+            queryset = queryset.filter(task_type_id=task_type_id)
+
+        # Deadline filter
+        deadline_filter = self.request.GET.get("deadline_filter")
+        today = timezone.now().date()
+        if deadline_filter:
+            if deadline_filter == "today":
+                queryset = queryset.filter(deadline=today)
+            elif deadline_filter == "next_3_days":
+                end_date = today + timezone.timedelta(days=3)
+                queryset = queryset.filter(deadline__gte=today, deadline__lte=end_date)
+            elif deadline_filter == "next_week":
+                end_date = today + timezone.timedelta(days=7)
+                queryset = queryset.filter(deadline__gte=today, deadline__lte=end_date)
+            elif deadline_filter == "overdue":
+                queryset = queryset.filter(deadline__lt=today, is_completed=False)
+
+        # Assignee filter
+        assignee_id = self.request.GET.get("assignee")
+        if assignee_id and assignee_id != "all":
+            queryset = queryset.filter(assignees__id=assignee_id).distinct()
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["task_page"] = "active"
+        context["today"] = timezone.now().date()
+        
+        search_form = TaskSearchForm(self.request.GET)
+        filter_form = TaskFilterForm(self.request.GET)
+        
+        context["search_form"] = search_form
+        context["filter_form"] = filter_form
+        
+        active_filters_count = 0
+        filter_data = filter_form.data if filter_form.is_bound else {}
+        
+        if filter_data.get("deadline_filter") and filter_data.get("deadline_filter") != "all":
+            active_filters_count += 1
+        if filter_data.get("status") and filter_data.get("status") != "all":
+            active_filters_count += 1
+        if filter_data.get("priority") and filter_data.get("priority") != "all":
+            active_filters_count += 1
+        if filter_data.get("task_type") and filter_data.get("task_type") != "all":
+            active_filters_count += 1
+        if filter_data.get("assignee") and filter_data.get("assignee") != "all":
+            active_filters_count += 1
+        
+        context["active_filters_count"] = active_filters_count
+        context["has_active_filters"] = active_filters_count > 0
+        
         return context
 
 
