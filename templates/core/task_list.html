@@ -178,7 +178,7 @@
             <td class="d-none d-xl-table-cell">
               {% if task.assignees.all %}
                 {% for assignee in task.assignees.all %}
-                  <a href="{% url 'core:task-list' %}?assignee={{ assignee.id }}"
+                  <a href="{% url 'core:worker-detail' assignee.pk %}"
                      class="link-dark text-decoration-none">
                     {% if assignee.first_name or assignee.last_name %}
                       {{ assignee.first_name }} {{ assignee.last_name }}

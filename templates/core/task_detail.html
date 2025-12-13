@@ -96,7 +96,13 @@
             {% for assignee in task.assignees.all %}
               <li class="py-2">
                 <i class="bi bi-person"></i>
-                {{ assignee.first_name }} {{ assignee.last_name }}
+                <a href="{% url 'core:worker-detail' assignee.pk %}" class="text-decoration-none">
+                  {% if assignee.first_name or assignee.last_name %}
+                    {{ assignee.first_name }} {{ assignee.last_name }}
+                  {% else %}
+                    {{ assignee.username }}
+                  {% endif %}
+                </a>
                 <span class="text-muted">({{ assignee.username }})</span>
                 {% if assignee.position %}
                   <span
