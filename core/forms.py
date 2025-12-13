@@ -6,7 +6,7 @@ from django.contrib.auth.password_validation import (
 )
 from django.utils.safestring import mark_safe
 
-from core.models import TaskType
+from core.models import Task, TaskType
 
 User = get_user_model()
 
@@ -117,3 +117,13 @@ class TaskFilterForm(forms.Form):
                 display_name = worker.username
             assignee_choices.append((str(worker.id), display_name))
         self.fields["assignee"].choices = assignee_choices
+
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = "__all__"
+        widgets = {
+            "assignees": forms.CheckboxSelectMultiple(),
+            "deadline": forms.DateInput(attrs={"type": "date"})
+        }

@@ -1,21 +1,19 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.http import JsonResponse
 from django.utils import timezone
-from django.views.decorators.http import require_http_methods
+from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
     CreateView,
     DetailView,
     UpdateView,
     DeleteView,
-    View,
     TemplateView,
 )
 
 from core.models import Task, TaskType
-from core.forms import TaskSearchForm, TaskFilterForm
+from core.forms import TaskForm, TaskSearchForm, TaskFilterForm
 
 User = get_user_model()
 
@@ -173,6 +171,10 @@ class TaskListView(LoginRequiredMixin, ListView):
 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
+    model = Task
+    form_class = TaskForm
+    success_url = reverse_lazy("core:task-list")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["task_page"] = "active"
@@ -180,6 +182,10 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
+    model = Task
+    fields = "__all__"
+    success_url = reverse_lazy("core:task-list")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["task_page"] = "active"
