@@ -194,6 +194,10 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
 
 
 class TaskUpdateView(LoginRequiredMixin, UpdateView):
+    model = Task
+    form_class = TaskForm
+    success_url = reverse_lazy("core:task-list")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["task_page"] = "active"
@@ -201,6 +205,9 @@ class TaskUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class TaskDeleteView(LoginRequiredMixin, DeleteView):
+    model = Task
+    success_url = reverse_lazy("core:task-list")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["task_page"] = "active"
