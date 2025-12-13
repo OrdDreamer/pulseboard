@@ -1,6 +1,7 @@
+import json
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.utils import timezone
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseForbidden
@@ -33,47 +34,149 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         today = timezone.now().date()
-        tasks = Task.objects.all()
 
-        total_tasks = tasks.count()
-        completed_tasks = tasks.filter(is_completed=True).count()
-        pending_tasks = tasks.filter(is_completed=False).count()
-        overdue_tasks = tasks.filter(
+        # Personal Statistics
+        personal_tasks = Task.objects.filter(assignees=user)
+        personal_total = personal_tasks.count()
+        personal_completed = personal_tasks.filter(is_completed=True).count()
+        personal_pending = personal_tasks.filter(is_completed=False).count()
+        personal_overdue = personal_tasks.filter(
             is_completed=False,
             deadline__lt=today
         ).count()
+        personal_completion_percent = (
+            (personal_completed / personal_total * 100)
+            if personal_total > 0 else 0
+        )
 
-        my_tasks = tasks.filter(
-            assignees=user,
-            is_completed=False
-        ).select_related("task_type").prefetch_related("assignees")
+        # Distribution of tasks by priorities (personal)
+        personal_priority_dist = personal_tasks.values("priority").annotate(
+            count=Count("id")
+        )
+        personal_priorities = {}
+        for item in personal_priority_dist:
+            count = item["count"]
+            percent = (
+                (count / personal_total * 100)
+                if personal_total > 0
+                else 0
+            )
+            personal_priorities[item["priority"]] = {
+                "count": count,
+                "percent": round(percent, 1)
+            }
 
-        upcoming_deadline = today + timezone.timedelta(days=7)
-        upcoming_tasks = my_tasks.filter(
-            deadline__lt=upcoming_deadline,
-            deadline__gte=today
-        ).order_by("deadline")
+        # Distribution of tasks by types (personal)
+        personal_type_dist = personal_tasks.filter(
+            task_type__isnull=False
+        ).values("task_type__name").annotate(
+            count=Count("id")
+        )
+        personal_types = {}
+        for item in personal_type_dist:
+            count = item["count"]
+            percent = (
+                (count / personal_total * 100)
+                if personal_total > 0
+                else 0
+            )
+            personal_types[item["task_type__name"]] = {
+                "count": count,
+                "percent": round(percent, 1)
+            }
 
-        urgent_tasks = my_tasks.filter(priority__in=["urgent", "high"])
+        # Team Statistics
+        team_tasks = Task.objects.all()
+        team_total = team_tasks.count()
+        team_completed = team_tasks.filter(is_completed=True).count()
+        team_pending = team_tasks.filter(is_completed=False).count()
+        team_overdue = team_tasks.filter(
+            is_completed=False,
+            deadline__lt=today
+        ).count()
+        team_completion_percent = (
+            (team_completed / team_total * 100)
+            if team_total > 0 else 0
+        )
 
-        priority_stats = {
-            "urgent": tasks.filter(priority="urgent",
-                                   is_completed=False).count(),
-            "high": tasks.filter(priority="high", is_completed=False).count(),
-            "medium": tasks.filter(priority="medium",
-                                   is_completed=False).count(),
-            "low": tasks.filter(priority="low", is_completed=False).count(),
+        # Distribution of tasks by priorities (team)
+        team_priority_dist = team_tasks.values("priority").annotate(
+            count=Count("id")
+        )
+        team_priorities = {}
+        for item in team_priority_dist:
+            count = item["count"]
+            percent = (count / team_total * 100) if team_total > 0 else 0
+            team_priorities[item["priority"]] = {
+                "count": count,
+                "percent": round(percent, 1)
+            }
+
+        # Distribution of tasks by types (team)
+        team_type_dist = team_tasks.filter(
+            task_type__isnull=False
+        ).values("task_type__name").annotate(
+            count=Count("id")
+        )
+        team_types = {}
+        for item in team_type_dist:
+            count = item["count"]
+            percent = (count / team_total * 100) if team_total > 0 else 0
+            team_types[item["task_type__name"]] = {
+                "count": count,
+                "percent": round(percent, 1)
+            }
+
+        # Top 5 workers with the most tasks
+        top_workers = User.objects.annotate(
+            task_count=Count("tasks")
+        ).filter(
+            task_count__gt=0
+        ).order_by("-task_count")[:5].select_related("position")
+
+        # Preparation of JSON data for charts
+        personal_priority_chart = {
+            "labels": list(personal_priorities.keys()),
+            "data": [v["count"] for v in personal_priorities.values()],
+        }
+        team_priority_chart = {
+            "labels": list(team_priorities.keys()),
+            "data": [v["count"] for v in team_priorities.values()],
+        }
+
+        personal_type_chart = {
+            "labels": list(personal_types.keys()),
+            "data": [v["count"] for v in personal_types.values()]
+        }
+        team_type_chart = {
+            "labels": list(team_types.keys()),
+            "data": [v["count"] for v in team_types.values()]
         }
 
         context.update({
-            "total_tasks": total_tasks,
-            "completed_tasks": completed_tasks,
-            "pending_tasks": pending_tasks,
-            "overdue_tasks": overdue_tasks,
-            "my_tasks": my_tasks[:10],
-            "upcoming_tasks": upcoming_tasks[:5],
-            "urgent_tasks": urgent_tasks[:5],
-            "priority_stats": priority_stats,
+            # Personal Statistics
+            "personal_total": personal_total,
+            "personal_completed": personal_completed,
+            "personal_pending": personal_pending,
+            "personal_overdue": personal_overdue,
+            "personal_completion_percent": round(personal_completion_percent,
+                                                 1),
+            "personal_priorities": personal_priorities,
+            "personal_types": personal_types,
+            "personal_priority_chart_json": json.dumps(
+                personal_priority_chart),
+            "personal_type_chart_json": json.dumps(personal_type_chart),
+            # Team Statistics
+            "team_total": team_total,
+            "team_completed": team_completed,
+            "team_pending": team_pending,
+            "team_overdue": team_overdue,
+            "team_completion_percent": round(team_completion_percent, 1),
+            "team_priorities": team_priorities,
+            "team_types": team_types,
+            "team_priority_chart_json": json.dumps(team_priority_chart),
+            "team_type_chart_json": json.dumps(team_type_chart),
+            "top_workers": top_workers,
             "dashboard_page": "active",
         })
 
