@@ -56,7 +56,7 @@
 <body>
   <div class="container-fluid">
     <div class="row flex-nowrap">
-      <div class="col-auto p-0">
+      <div class="col-auto p-0 d-none d-md-block">
         {% block sidebar %}
         {% include "includes/sidebar.html" %}
         {% endblock %}
@@ -67,6 +67,12 @@
         </main>
       </div>
     </div>
+  </div>
+  
+  <div class="d-block d-md-none">
+    {% block sidebar_mobile %}
+    {% include "includes/sidebar.html" %}
+    {% endblock %}
   </div>
 
   <script

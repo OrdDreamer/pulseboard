@@ -125,8 +125,6 @@
             <td class="d-none d-xl-table-cell">
               {% if task.task_type %}
                 <span class="badge border border-muted text-muted">{{ task.task_type.name }}</span>
-              {% else %}
-                <span class="text-muted">—</span>
               {% endif %}
             </td>
             <td>
@@ -182,7 +180,11 @@
                 {% for assignee in task.assignees.all %}
                   <a href="{% url 'core:task-list' %}?assignee={{ assignee.id }}"
                      class="link-dark text-decoration-none">
-                    {{ assignee.username }}
+                    {% if assignee.first_name or assignee.last_name %}
+                      {{ assignee.first_name }} {{ assignee.last_name }}
+                    {% else %}
+                      {{ assignee.username }}
+                    {% endif %}
                   </a>{% if not forloop.last %}<br>{% endif %}
                 {% endfor %}
               {% else %}
