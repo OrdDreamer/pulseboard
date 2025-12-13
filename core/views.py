@@ -51,9 +51,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         urgent_tasks = my_tasks.filter(priority__in=["urgent", "high"])
 
         priority_stats = {
-            "urgent": tasks.filter(priority="urgent", is_completed=False).count(),
+            "urgent": tasks.filter(priority="urgent",
+                                   is_completed=False).count(),
             "high": tasks.filter(priority="high", is_completed=False).count(),
-            "medium": tasks.filter(priority="medium", is_completed=False).count(),
+            "medium": tasks.filter(priority="medium",
+                                   is_completed=False).count(),
             "low": tasks.filter(priority="low", is_completed=False).count(),
         }
 
@@ -118,12 +120,15 @@ class TaskListView(LoginRequiredMixin, ListView):
                 queryset = queryset.filter(deadline=today)
             elif deadline_filter == "next_3_days":
                 end_date = today + timezone.timedelta(days=3)
-                queryset = queryset.filter(deadline__gte=today, deadline__lte=end_date)
+                queryset = queryset.filter(deadline__gte=today,
+                                           deadline__lte=end_date)
             elif deadline_filter == "next_week":
                 end_date = today + timezone.timedelta(days=7)
-                queryset = queryset.filter(deadline__gte=today, deadline__lte=end_date)
+                queryset = queryset.filter(deadline__gte=today,
+                                           deadline__lte=end_date)
             elif deadline_filter == "overdue":
-                queryset = queryset.filter(deadline__lt=today, is_completed=False)
+                queryset = queryset.filter(deadline__lt=today,
+                                           is_completed=False)
 
         # Assignee filter
         assignee_id = self.request.GET.get("assignee")
@@ -136,30 +141,34 @@ class TaskListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["task_page"] = "active"
         context["today"] = timezone.now().date()
-        
+
         search_form = TaskSearchForm(self.request.GET)
         filter_form = TaskFilterForm(self.request.GET)
-        
+
         context["search_form"] = search_form
         context["filter_form"] = filter_form
-        
+
         active_filters_count = 0
         filter_data = filter_form.data if filter_form.is_bound else {}
-        
-        if filter_data.get("deadline_filter") and filter_data.get("deadline_filter") != "all":
+
+        if filter_data.get("deadline_filter") and filter_data.get(
+                "deadline_filter") != "all":
             active_filters_count += 1
         if filter_data.get("status") and filter_data.get("status") != "all":
             active_filters_count += 1
-        if filter_data.get("priority") and filter_data.get("priority") != "all":
+        if filter_data.get("priority") and filter_data.get(
+                "priority") != "all":
             active_filters_count += 1
-        if filter_data.get("task_type") and filter_data.get("task_type") != "all":
+        if filter_data.get("task_type") and filter_data.get(
+                "task_type") != "all":
             active_filters_count += 1
-        if filter_data.get("assignee") and filter_data.get("assignee") != "all":
+        if filter_data.get("assignee") and filter_data.get(
+                "assignee") != "all":
             active_filters_count += 1
-        
+
         context["active_filters_count"] = active_filters_count
         context["has_active_filters"] = active_filters_count > 0
-        
+
         return context
 
 
