@@ -1,55 +1,55 @@
-# 🧩 Pulseboard - Менеджер завдань для IT-компанії
+# 🧩 Pulseboard - Task Manager for IT Company
 
-## 📘 Опис проєкту
+## 📘 Project Description
 
-**Pulseboard** — це навчальний веб-додаток для управління завданнями в IT-компанії. Система дозволяє команді розробників, дизайнерів, project-менеджерів та QA-спеціалістів ефективно керувати завданнями, призначати їх членам команди та відстежувати прогрес виконання.
+**Pulseboard** is an educational web application for task management in an IT company. The system allows teams of developers, designers, project managers, and QA specialists to efficiently manage tasks, assign them to team members, and track progress.
 
-Кожен член команди може:
-- створювати завдання
-- призначати завдання іншим членам команди
-- позначати завдання як виконані
-- переглядати статистику виконання завдань
-
----
-
-## ✨ Функціонал
-
-### Управління завданнями
-- **CRUD операції**: створення, перегляд, редагування та видалення завдань
-- **Призначення виконавців**: можливість призначати завдання одному або кільком працівникам
-- **Пріоритети**: встановлення пріоритету завдання (Urgent, High, Medium, Low)
-- **Типи завдань**: класифікація завдань (Bug, New feature, Breaking change, Refactoring, QA)
-- **Дедлайни**: встановлення та відстеження термінів виконання
-- **Статус виконання**: відмітка про виконання завдання
-- **Пошук**: пошук завдань за назвою або описом
-- **Фільтрація**: фільтрація завдань за статусом (виконані/невиконані), пріоритетом, типом завдання, дедлайном (сьогодні, наступні 3 дні, наступний тиждень, прострочені) та виконавцем
-
-### Управління працівниками
-- **Перегляд списку працівників**: список всіх членів команди з їх посадами
-- **Профіль працівника**: детальна інформація про працівника та його завдання
-- **Редагування профілю**: можливість оновити власний профіль
-- **Пошук**: пошук працівників за ім'ям, прізвищем або username
-- **Фільтрація**: фільтрація працівників за посадою
-
-### Дашборд зі статистикою
-- **Персональна статистика**: 
-  - загальна кількість завдань
-  - виконані та невиконані завдання
-  - прострочені завдання
-  - відсоток виконання
-  - розподіл за пріоритетами та типами
-- **Командна статистика**: аналогічна статистика для всієї команди
-- **Топ-5 працівників**: працівники з найбільшою кількістю завдань
-
-### Автентифікація та реєстрація
-- **Реєстрація**: створення нового облікового запису
-- **Вхід в систему**: автентифікація користувачів
-- **Вихід**: безпечний вихід з системи
-- **Захист маршрутів**: доступ до функціоналу тільки для авторизованих користувачів
+Each team member can:
+- create tasks
+- assign tasks to other team members
+- mark tasks as completed
+- view task completion statistics
 
 ---
 
-## 🛠️ Технології
+## ✨ Features
+
+### Task Management
+- **CRUD operations**: create, view, edit, and delete tasks
+- **Assignee assignment**: ability to assign tasks to one or multiple workers
+- **Priorities**: set task priority (Urgent, High, Medium, Low)
+- **Task types**: task classification (Bug, New feature, Breaking change, Refactoring, QA)
+- **Deadlines**: set and track completion deadlines
+- **Completion status**: mark tasks as completed
+- **Search**: search tasks by name or description
+- **Filtering**: filter tasks by status (completed/incomplete), priority, task type, deadline (today, next 3 days, next week, overdue) and assignee
+
+### Worker Management
+- **Worker list**: view all team members with their positions
+- **Worker profile**: detailed information about a worker and their tasks
+- **Profile editing**: ability to update your own profile
+- **Search**: search workers by first name, last name, or username
+- **Filtering**: filter workers by position
+
+### Statistics Dashboard
+- **Personal statistics**: 
+  - total number of tasks
+  - completed and incomplete tasks
+  - overdue tasks
+  - completion percentage
+  - distribution by priorities and types
+- **Team statistics**: similar statistics for the entire team
+- **Top 5 workers**: workers with the most tasks
+
+### Authentication and Registration
+- **Registration**: create a new account
+- **Login**: user authentication
+- **Logout**: secure logout from the system
+- **Route protection**: access to functionality only for authorized users
+
+---
+
+## 🛠️ Technologies
 
 - **Python 3.8+**
 - **Django 5.2.8**
@@ -60,27 +60,27 @@
 
 ---
 
-## 📋 Встановлення
+## 📋 Installation
 
-### Вимоги
+### Requirements
 
-- Python 3.8 або вище
-- pip (менеджер пакетів Python)
+- Python 3.8 or higher
+- pip (Python package manager)
 
-### Крок 1: Клонування репозиторію
+### Step 1: Clone the repository
 
 ```bash
 git clone https://github.com/OrdDreamer/pulseboard
 cd pulseboard
 ```
 
-### Крок 2: Створення віртуального середовища
+### Step 2: Create a virtual environment
 
 ```bash
 python -m venv venv
 ```
 
-Активація віртуального середовища:
+Activate the virtual environment:
 
 **Linux/Mac:**
 ```bash
@@ -92,21 +92,21 @@ source venv/bin/activate
 venv\Scripts\activate
 ```
 
-### Крок 3: Встановлення залежностей
+### Step 3: Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Крок 4: Застосування міграцій
+### Step 4: Apply migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### Крок 5: Завантаження фікстур
+### Step 5: Load fixtures
 
-Для завантаження тестових даних (позиції, типи завдань, працівники, завдання):
+To load test data (positions, task types, workers, tasks):
 
 ```bash
 python manage.py loaddata core/fixtures/initial_data.json
@@ -114,134 +114,134 @@ python manage.py loaddata core/fixtures/initial_data.json
 
 ---
 
-## 🚀 Запуск проєкту
+## 🚀 Running the Project
 
-Після виконання всіх кроків встановлення, запустіть сервер розробки:
+After completing all installation steps, start the development server:
 
 ```bash
 python manage.py runserver
 ```
 
-Додаток буде доступний за адресою: **http://127.0.0.1:8000/**
+The application will be available at: **http://127.0.0.1:8000/**
 
 ---
 
-## 👤 Тестові облікові дані
+## 👤 Test Credentials
 
-Після завантаження фікстур ви можете увійти в систему, використовуючи наступні облікові дані:
+After loading the fixtures, you can log in to the system using the following credentials:
 
-- **Логін:** `admin`
-- **Пароль:** `admin`
+- **Username:** `admin`
+- **Password:** `admin`
 
-Цей акаунт має права суперкористувача та дозволяє:
-- повний доступ до всіх функцій додатку
-- доступ до Django адмін-панелі (http://127.0.0.1:8000/admin/)
-- створення, редагування та видалення завдань
-- перегляд та редагування профілів працівників
-- перегляд статистики команди
+This account has superuser privileges and allows:
+- full access to all application features
+- access to Django admin panel (http://127.0.0.1:8000/admin/)
+- create, edit, and delete tasks
+- view and edit worker profiles
+- view team statistics
 
 ---
 
-## 📁 Структура проєкту
+## 📁 Project Structure
 
 ```
 pulseboard/
-├── core/                      # Основна Django-додаток
-│   ├── fixtures/              # Фікстури з тестовими даними
+├── core/                      # Main Django app
+│   ├── fixtures/              # Fixtures with test data
 │   │   └── initial_data.json
-│   ├── migrations/            # Міграції бази даних
-│   ├── models.py              # Моделі даних
-│   ├── views.py               # Представлення (views)
-│   ├── forms.py               # Форми
-│   ├── urls.py                # URL-маршрути
-│   └── admin.py               # Налаштування адмін-панелі
-├── pulseboard/                # Налаштування проєкту
-│   ├── settings.py            # Налаштування Django
-│   └── urls.py                # Головні URL-маршрути
-├── templates/                 # HTML шаблони
-│   ├── base.html              # Базовий шаблон
-│   ├── base_auth.html         # Базовий шаблон для автентифікації
-│   └── core/                  # Шаблони для core додатку
-│       ├── index.html         # Дашборд зі статистикою
-│       ├── task_list.html     # Список завдань
-│       ├── task_detail.html   # Деталі завдання
-│       ├── task_form.html     # Форма створення/редагування завдання
-│       ├── task_confirm_delete.html # Підтвердження видалення завдання
-│       ├── worker_list.html   # Список працівників
-│       ├── worker_detail.html # Профіль працівника
-│       └── worker_form.html   # Форма редагування працівника
-├── static/                    # Статичні файли (CSS, зображення)
+│   ├── migrations/            # Database migrations
+│   ├── models.py              # Data models
+│   ├── views.py               # Views
+│   ├── forms.py               # Forms
+│   ├── urls.py                # URL routes
+│   └── admin.py               # Admin panel settings
+├── pulseboard/                # Project settings
+│   ├── settings.py            # Django settings
+│   └── urls.py                # Main URL routes
+├── templates/                 # HTML templates
+│   ├── base.html              # Base template
+│   ├── base_auth.html         # Base template for authentication
+│   └── core/                  # Templates for core app
+│       ├── index.html         # Statistics dashboard
+│       ├── task_list.html     # Task list
+│       ├── task_detail.html   # Task details
+│       ├── task_form.html     # Task create/edit form
+│       ├── task_confirm_delete.html # Task deletion confirmation
+│       ├── worker_list.html   # Worker list
+│       ├── worker_detail.html # Worker profile
+│       └── worker_form.html   # Worker edit form
+├── static/                    # Static files (CSS, images)
 │   ├── css/
 │   └── images/
-├── db.sqlite3               # База даних SQLite
-├── manage.py                # Django management скрипт
-├── requirements.txt         # Залежності проєкту
-└── README.md                # Документація
+├── db.sqlite3               # SQLite database
+├── manage.py                # Django management script
+├── requirements.txt         # Project dependencies
+└── README.md                # Documentation
 ```
 
 ---
 
-## 🗄️ Моделі даних
+## 🗄️ Data Models
 
-### Position (Посада)
-- `name` — назва посади (Developer, Project Manager, QA, Designer, DevOps)
-- Зв'язок: Position → Worker (1 → n)
+### Position
+- `name` — position name (Developer, Project Manager, QA, Designer, DevOps)
+- Relationship: Position → Worker (1 → n)
 
-### Worker (Працівник)
-Розширює Django AbstractUser:
-- `position` — посада працівника (ForeignKey до Position)
-- `username`, `email`, `password` — стандартні поля користувача
-- `first_name`, `last_name` — ім'я та прізвище
-- Зв'язки: 
+### Worker
+Extends Django AbstractUser:
+- `position` — worker's position (ForeignKey to Position)
+- `username`, `email`, `password` — standard user fields
+- `first_name`, `last_name` — first and last name
+- Relationships: 
   - Position → Worker (1 → n)
   - Worker ↔ Task (ManyToMany)
 
-### TaskType (Тип завдання)
-- `name` — назва типу (Bug, New feature, Breaking change, Refactoring, QA)
-- Зв'язок: TaskType → Task (1 → n)
+### TaskType
+- `name` — type name (Bug, New feature, Breaking change, Refactoring, QA)
+- Relationship: TaskType → Task (1 → n)
 
-### Task (Завдання)
-- `name` — назва завдання
-- `description` — опис завдання
-- `deadline` — термін виконання
-- `is_completed` — статус виконання (True/False)
-- `priority` — пріоритет (Urgent, High, Medium, Low)
-- `task_type` — тип завдання (ForeignKey до TaskType)
-- `assignees` — виконавці (ManyToMany до Worker)
-- Зв'язки:
+### Task
+- `name` — task name
+- `description` — task description
+- `deadline` — completion deadline
+- `is_completed` — completion status (True/False)
+- `priority` — priority (Urgent, High, Medium, Low)
+- `task_type` — task type (ForeignKey to TaskType)
+- `assignees` — assignees (ManyToMany to Worker)
+- Relationships:
   - TaskType → Task (1 → n)
   - Task ↔ Worker (ManyToMany)
 
 ---
 
-## 🔗 Основні URL-маршрути
+## 🔗 Main URL Routes
 
-- `/` — головна сторінка (дашборд)
-- `/tasks/` — список завдань
-- `/tasks/create/` — створення нового завдання
-- `/tasks/<id>/` — деталі завдання
-- `/tasks/<id>/update/` — редагування завдання
-- `/tasks/<id>/delete/` — видалення завдання
-- `/workers/` — список працівників
-- `/workers/<id>/` — профіль працівника
-- `/workers/<id>/update/` — редагування профілю
-- `/login/` — вхід в систему
-- `/logout/` — вихід з системи
-- `/register/` — реєстрація нового користувача
-- `/admin/` — Django адмін-панель
-
----
-
-## 📝 Додаткові примітки
-
-- Проєкт використовує кастомну модель користувача `Worker`, яка розширює `AbstractUser`
-- Всі представлення (views) захищені через `LoginRequiredMixin`
-- Використовується пагінація для списків завдань та працівників (20 елементів на сторінку)
-- Дашборд містить візуалізацію статистики за допомогою графіків
-- Форми стилізовані за допомогою Bootstrap 5 через Django Crispy Forms
+- `/` — home page (dashboard)
+- `/tasks/` — task list
+- `/tasks/create/` — create new task
+- `/tasks/<id>/` — task details
+- `/tasks/<id>/update/` — edit task
+- `/tasks/<id>/delete/` — delete task
+- `/workers/` — worker list
+- `/workers/<id>/` — worker profile
+- `/workers/<id>/update/` — edit profile
+- `/login/` — login
+- `/logout/` — logout
+- `/register/` — register new user
+- `/admin/` — Django admin panel
 
 ---
 
-## 📄 Ліцензія
+## 📝 Additional Notes
 
-Це навчальний проєкт, створений в освітніх цілях.
+- The project uses a custom user model `Worker` that extends `AbstractUser`
+- All views are protected via `LoginRequiredMixin`
+- Pagination is used for task and worker lists (20 items per page)
+- The dashboard contains statistics visualization using charts
+- Forms are styled using Bootstrap 5 via Django Crispy Forms
+
+---
+
+## 📄 License
+
+This is an educational project created for educational purposes.
