@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Task Detail{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-md-row flex-column gap-3 mb-4">
+    <div class="d-flex align-items-center gap-3 me-auto">
+      <a href="javascript:history.back()" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+        <span class="visually-hidden">Back to List</span>
+      </a>
+      <h1 class="m-0">Task Detail</h1>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <a href="{% url 'core:task-update' task.pk %}" class="btn btn-primary">
+        <i class="bi bi-pencil"></i> Edit
+      </a>
+      <a href="{% url 'core:task-delete' task.pk %}" class="btn btn-danger">
+        <i class="bi bi-trash"></i> Delete
+      </a>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="mb-4">#{{ task.id }} - {{ task.name }}</h2>
+    <div class="d-flex flex-lg-row flex-column gap-3 mb-4 border rounded p-3">
+      <div class="flex-lg-fill">
+        <h5 class="text-muted mb-2">Basic Information</h5>
+        <table class="table table-borderless m-0">
+          <tr>
+            <th class="fw-normal">Status:</th>
+            <td>
+              {% if task.is_completed %}
+                <span class="badge border border-success bg-success-subtle text-success">
+                    <i class="bi bi-check-circle"></i> Completed
+                  </span>
+              {% else %}
+                <span class="badge border border-secondary bg-secondary-subtle text-secondary">
+                    <i class="bi bi-circle"></i> Pending
+                  </span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th class="fw-normal">Priority:</th>
+            <td>
+              {% if task.priority == "urgent" %}
+                <span class="badge border border-danger bg-danger-subtle text-danger">
+                    <i class="bi bi-chevron-double-up fw-bold"></i> Urgent
+                  </span>
+              {% elif task.priority == "high" %}
+                <span class="badge border border-warning bg-warning-subtle text-warning">
+                    <i class="bi bi-chevron-up fw-bold"></i> High
+                  </span>
+              {% elif task.priority == "medium" %}
+                <span class="badge border border-info bg-info-subtle text-info">
+                    <i class="bi bi-dash-lg fw-bold"></i> Medium
+                  </span>
+              {% elif task.priority == "low" %}
+                <span class="badge border border-secondary bg-secondary-subtle text-secondary">
+                    <i class="bi bi-chevron-down fw-bold"></i> Low
+                  </span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th class="fw-normal">Task Type:</th>
+            <td>
+              {% if task.task_type %}
+                <span class="badge border border-secondary text-secondary">{{ task.task_type.name }}</span>
+              {% else %}
+                <span class="text-muted">Not specified</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th class="fw-normal">Deadline:</th>
+            <td>
+              <i class="bi bi-calendar"></i> {{ task.deadline }}
+              {% if not task.is_completed %}
+                {% if task.deadline < today %}
+                  <span class="badge border border-danger bg-danger-subtle text-danger ms-2">Overdue</span>
+                {% elif task.deadline == today %}
+                  <span class="badge border border-warning bg-warning-subtle text-warning ms-2">Due Today</span>
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="flex-lg-fill">
+        <h5 class="text-muted mb-2">Assignees</h5>
+        {% if task.assignees.all %}
+          <ul class="list-unstyled">
+            {% for assignee in task.assignees.all %}
+              <li class="py-2">
+                <i class="bi bi-person"></i>
+                <a href="{% url 'core:worker-detail' assignee.pk %}" class="text-decoration-none">
+                  {% if assignee.first_name or assignee.last_name %}
+                    {{ assignee.first_name }} {{ assignee.last_name }}
+                  {% else %}
+                    {{ assignee.username }}
+                  {% endif %}
+                </a>
+                <span class="text-muted">({{ assignee.username }})</span>
+                {% if assignee.position %}
+                  <span
+                      class="badge border border-secondary bg-secondary-subtle text-secondary">{{ assignee.position.name }}</span>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted">No assignees</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card border-secondary-subtle border p-3">
+      <h5 class="text-muted mb-3">Description</h5>
+      <p class="m-0">{{ task.description }}</p>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Pulseboard - Dashboard
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <h1 class="mb-4">Dashboard</h1>
+
+    <div class="row g-4">
+      <!-- Personal Statistics -->
+      <div class="col-lg-6 col-12 order-1 order-lg-1">
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-person-circle"></i> Personal Statistics</h5>
+          </div>
+          <div class="card-body">
+            <!-- Main Metrics -->
+            <table class="table table-bordered mb-4">
+              <tbody>
+              <tr>
+                <td>Total</td>
+                <td class="text-end"><strong>{{ personal_total }}</strong></td>
+              </tr>
+              <tr>
+                <td>Completed</td>
+                <td class="text-end">
+                  <strong>{{ personal_completed }}</strong>
+                  <small class="text-success ms-2">({{ personal_completion_percent }}%)</small>
+                </td>
+              </tr>
+              <tr>
+                <td>Pending</td>
+                <td class="text-end"><strong>{{ personal_pending }}</strong></td>
+              </tr>
+              <tr>
+                <td>Overdue</td>
+                <td class="text-end text-danger"><strong>{{ personal_overdue }}</strong></td>
+              </tr>
+              </tbody>
+            </table>
+
+            <!-- Distribution by Priorities -->
+            <div class="mb-4">
+              <h6 class="mb-3">Distribution by Priorities</h6>
+              <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+                <div class="flex-shrink-0">
+                  <canvas id="personalPriorityChart"
+                          width="150"
+                          height="150"
+                          data-chart='{{ personal_priority_chart_json }}'
+                          data-colors='["#dc3545", "#ffc107", "#0dcaf0", "#6c757d"]'></canvas>
+                </div>
+                <div class="flex-grow-1 w-100">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <span class="badge bg-danger">Urgent</span>
+                      <span>{{ personal_priorities.urgent.count }}</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <span class="badge bg-warning text-dark">High</span>
+                      <span>{{ personal_priorities.high.count }}</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <span class="badge bg-info text-dark">Medium</span>
+                      <span>{{ personal_priorities.medium.count }}</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <span class="badge bg-secondary">Low</span>
+                      <span>{{ personal_priorities.low.count }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Distribution by Types -->
+            {% if personal_types %}
+              <div>
+                <h6 class="mb-3">Distribution by Types</h6>
+                <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+                  <div class="flex-shrink-0">
+                    <canvas id="personalTypeChart"
+                            width="150"
+                            height="150"
+                            data-chart='{{ personal_type_chart_json }}'
+                            data-colors='["#0d6efd", "#dc3545", "#6f42c1", "#fd7e14", "#20c997", "#e83e8c"]'></canvas>
+                  </div>
+                  <div class="flex-grow-1 w-100">
+                    <ul class="list-group list-group-flush"
+                        data-type-colors='["#0d6efd", "#dc3545", "#6f42c1", "#fd7e14", "#20c997", "#e83e8c"]'>
+                      {% for type_name, type_data in personal_types.items %}
+                        <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                          <span class="badge text-white type-badge"
+                                data-index="{{ forloop.counter0 }}">{{ type_name }}</span>
+                          <span>{{ type_data.count }}</span>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <div class="text-muted">
+                <p class="mb-0">No tasks with types</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Statistics -->
+      <div class="col-lg-6 col-12 order-2 order-lg-2">
+        <div class="card mb-4">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-people"></i> Team Statistics</h5>
+          </div>
+          <div class="card-body">
+            <!-- Main Metrics -->
+            <table class="table table-bordered mb-4">
+              <tbody>
+              <tr>
+                <td>Total</td>
+                <td class="text-end"><strong>{{ team_total }}</strong></td>
+              </tr>
+              <tr>
+                <td>Completed</td>
+                <td class="text-end">
+                  <strong>{{ team_completed }}</strong>
+                  <small class="text-success ms-2">({{ team_completion_percent }}%)</small>
+                </td>
+              </tr>
+              <tr>
+                <td>Pending</td>
+                <td class="text-end"><strong>{{ team_pending }}</strong></td>
+              </tr>
+              <tr>
+                <td>Overdue</td>
+                <td class="text-end text-danger"><strong>{{ team_overdue }}</strong></td>
+              </tr>
+              </tbody>
+            </table>
+
+            <!-- Distribution by Priorities -->
+            <div class="mb-4">
+              <h6 class="mb-3">Distribution by Priorities</h6>
+              <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+                <div class="flex-shrink-0">
+                  <canvas id="teamPriorityChart"
+                          width="150"
+                          height="150"
+                          data-chart='{{ team_priority_chart_json }}'
+                          data-colors='["#dc3545", "#ffc107", "#0dcaf0", "#6c757d"]'></canvas>
+                </div>
+                <div class="flex-grow-1 w-100">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <span class="badge bg-danger">Urgent</span>
+                      <span>{{ team_priorities.urgent.count }}</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <span class="badge bg-warning text-dark">High</span>
+                      <span>{{ team_priorities.high.count }}</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <span class="badge bg-info text-dark">Medium</span>
+                      <span>{{ team_priorities.medium.count }}</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <span class="badge bg-secondary">Low</span>
+                      <span>{{ team_priorities.low.count }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Distribution by Types -->
+            {% if team_types %}
+              <div class="mb-4">
+                <h6 class="mb-3">Distribution by Types</h6>
+                <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+                  <div class="flex-shrink-0">
+                    <canvas id="teamTypeChart"
+                            width="150"
+                            height="150"
+                            data-chart='{{ team_type_chart_json }}'
+                            data-colors='["#0d6efd", "#dc3545", "#6f42c1", "#fd7e14", "#20c997", "#e83e8c"]'></canvas>
+                  </div>
+                  <div class="flex-grow-1 w-100">
+                    <ul class="list-group list-group-flush"
+                        data-type-colors='["#0d6efd", "#dc3545", "#6f42c1", "#fd7e14", "#20c997", "#e83e8c"]'>
+                      {% for type_name, type_data in team_types.items %}
+                        <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                          <span class="badge text-white type-badge"
+                                data-index="{{ forloop.counter0 }}">{{ type_name }}</span>
+                          <span>{{ type_data.count }}</span>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <div class="text-muted mb-4">
+                <p class="mb-0">No tasks with types</p>
+              </div>
+            {% endif %}
+
+            <!-- Top 5 Workers -->
+            {% if top_workers %}
+              <div>
+                <h6 class="mb-3">Top 5 Workers</h6>
+                <ul class="list-group">
+                  {% for worker in top_workers %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>
+                    <a href="{% url 'core:worker-detail' worker.pk %}" class="text-decoration-none">
+                      {{ worker.first_name }} {{ worker.last_name }}
+                    </a>
+                    {% if worker.position %}
+                      <small class="text-muted">({{ worker.position.name }})</small>
+                    {% endif %}
+                  </span>
+                      <span class="badge bg-primary rounded-pill">{{ worker.task_count }} tasks</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% else %}
+              <div class="text-muted">
+                <p class="mb-0">No workers with tasks</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>
+      // Setting colors for type badges
+      document.querySelectorAll('.type-badge').forEach(function (badge) {
+          const list = badge.closest('[data-type-colors]');
+          if (list) {
+              const colors = JSON.parse(list.dataset.typeColors);
+              const index = parseInt(badge.dataset.index);
+              badge.style.setProperty('background-color', colors[index % colors.length]);
+          }
+      });
+  </script>
+  <script>
+      // Personal priorities
+      const personalPriorityCanvas = document.getElementById('personalPriorityChart');
+      if (personalPriorityCanvas) {
+          const chartData = JSON.parse(personalPriorityCanvas.dataset.chart);
+          const colors = JSON.parse(personalPriorityCanvas.dataset.colors);
+          new Chart(personalPriorityCanvas, {
+              type: 'doughnut',
+              data: {
+                  labels: chartData.labels,
+                  datasets: [{
+                      data: chartData.data,
+                      backgroundColor: colors.slice(0, chartData.labels.length)
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  plugins: {
+                      legend: {display: false}
+                  }
+              }
+          });
+      }
+
+      // Team priorities
+      const teamPriorityCanvas = document.getElementById('teamPriorityChart');
+      if (teamPriorityCanvas) {
+          const chartData = JSON.parse(teamPriorityCanvas.dataset.chart);
+          const colors = JSON.parse(teamPriorityCanvas.dataset.colors);
+          new Chart(teamPriorityCanvas, {
+              type: 'doughnut',
+              data: {
+                  labels: chartData.labels,
+                  datasets: [{
+                      data: chartData.data,
+                      backgroundColor: colors.slice(0, chartData.labels.length)
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  plugins: {
+                      legend: {display: false}
+                  }
+              }
+          });
+      }
+
+      // Personal types
+      const personalTypeCanvas = document.getElementById('personalTypeChart');
+      if (personalTypeCanvas) {
+          const chartData = JSON.parse(personalTypeCanvas.dataset.chart);
+          const colors = JSON.parse(personalTypeCanvas.dataset.colors);
+          new Chart(personalTypeCanvas, {
+              type: 'doughnut',
+              data: {
+                  labels: chartData.labels,
+                  datasets: [{
+                      data: chartData.data,
+                      backgroundColor: colors.slice(0, chartData.labels.length)
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  plugins: {
+                      legend: {display: false}
+                  }
+              }
+          });
+      }
+
+      // Team types
+      const teamTypeCanvas = document.getElementById('teamTypeChart');
+      if (teamTypeCanvas) {
+          const chartData = JSON.parse(teamTypeCanvas.dataset.chart);
+          const colors = JSON.parse(teamTypeCanvas.dataset.colors);
+          new Chart(teamTypeCanvas, {
+              type: 'doughnut',
+              data: {
+                  labels: chartData.labels,
+                  datasets: [{
+                      data: chartData.data,
+                      backgroundColor: colors.slice(0, chartData.labels.length)
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  plugins: {
+                      legend: {display: false}
+                  }
+              }
+          });
+      }
+  </script>
+{% endblock %}

@@ -2,3 +2,6 @@
 .vscode
 .cursor
 .venv
+**__pycache__
+docs
+*.sqlite3
