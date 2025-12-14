@@ -56,6 +56,7 @@ Each team member can:
 - **SQLite**
 - **Bootstrap 5**
 - **Django Crispy Forms**
+- **python-dotenv 1.0.0**
 - **Chart.js 4.4.0**
 
 ---
@@ -98,13 +99,34 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Step 4: Apply migrations
+### Step 4: Configure environment variables
+
+Create a `.env` file in the project root directory (next to `manage.py`):
+
+```bash
+cp .env.example .env
+```
+
+Edit the `.env` file and set your `SECRET_KEY`. Generate a secret key:
+
+```bash
+python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+```
+
+Copy the generated key and paste it into the `.env` file as the value for `SECRET_KEY`.
+
+**Important:** 
+- The `.env` file is already in `.gitignore` and will not be committed to the repository
+- Never commit your actual `.env` file with real secrets
+- Always use a strong, unique `SECRET_KEY` in production
+
+### Step 5: Apply migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### Step 5: Load fixtures
+### Step 6: Load fixtures
 
 To load test data (positions, task types, workers, tasks):
 
