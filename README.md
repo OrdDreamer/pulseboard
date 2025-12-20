@@ -56,7 +56,6 @@ Each team member can:
 - **SQLite**
 - **Bootstrap 5**
 - **Django Crispy Forms**
-- **python-dotenv 1.0.0**
 - **Chart.js 4.4.0**
 
 ---
@@ -101,24 +100,15 @@ pip install -r requirements.txt
 
 ### Step 4: Configure environment variables
 
-Create a `.env` file in the project root directory (next to `manage.py`):
-
-```bash
-cp .env.example .env
-```
-
-Edit the `.env` file and set your `SECRET_KEY`. Generate a secret key:
+**For production:** You must set the `SECRET_KEY` environment variable. Generate a secret key:
 
 ```bash
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
 
-Copy the generated key and paste it into the `.env` file as the value for `SECRET_KEY`.
+Then set it in your `.env` file (create one from `.env.example` if needed) or as an environment variable in your deployment configuration.
 
-**Important:** 
-- The `.env` file is already in `.gitignore` and will not be committed to the repository
-- Never commit your actual `.env` file with real secrets
-- Always use a strong, unique `SECRET_KEY` in production
+**For development:** You can use the default value that comes with the project (not recommended for production).
 
 ### Step 5: Apply migrations
 
