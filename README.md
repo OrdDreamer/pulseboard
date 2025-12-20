@@ -12,6 +12,19 @@ Each team member can:
 
 ---
 
+## 🌐 Online Version
+
+The service is deployed on **Render.com** and is available at:
+
+**https://orddreamer-pulseboard.onrender.com/**
+
+Test data is already loaded on the service. You can immediately test the functionality using the following credentials:
+
+- **Username:** `admin`
+- **Password:** `admin`
+
+---
+
 ## ✨ Features
 
 ### Task Management
